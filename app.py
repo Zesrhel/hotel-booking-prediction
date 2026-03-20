@@ -2,11 +2,25 @@ import os
 
 import joblib
 import pandas as pd
+import requests
 import streamlit as st
 
 
 ARTIFACT_PATH = os.path.join("artifacts", "hotel_cancellation_model.joblib")
 DATA_PATH = os.path.join("data", "hotel_bookings.csv")
+
+MODEL_URL = "YOUR_SHAREABLE_DOWNLOAD_URL_HERE"  # Replace with actual URL from cloud storage (e.g., Dropbox dl=1 link)
+
+
+def download_model():
+    os.makedirs("artifacts", exist_ok=True)
+    response = requests.get(MODEL_URL)
+    with open(ARTIFACT_PATH, "wb") as f:
+        f.write(response.content)
+
+
+if not os.path.exists(ARTIFACT_PATH):
+    download_model()
 
 
 @st.cache_resource
@@ -140,7 +154,5 @@ if st.button("Predict"):
     else:
         st.success("Predicted: Not Canceled")
 
-    with st.expander("Show input dataframe"):
-        st.dataframe(X_input)
 
 st.caption("Model: artifacts/hotel_cancellation_model.joblib")
