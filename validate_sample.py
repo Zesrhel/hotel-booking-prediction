@@ -16,7 +16,7 @@ def make_features(df: pd.DataFrame) -> pd.DataFrame:
         feature_df.get("stays_in_weekend_nights", 0).fillna(0)
         + feature_df.get("stays_in_week_nights", 0).fillna(0)
     )
-    feature_df["party_size"] = (
+    feature_df["person"] = (
         feature_df.get("adults", 0).fillna(0)
         + feature_df.get("children", 0).fillna(0)
         + feature_df.get("babies", 0).fillna(0)

@@ -81,18 +81,101 @@ The model is saved as `artifacts/hotel_cancellation_model.joblib`. Possible depl
 
 ## How to Run (Deployment + Testing)
 
-### Streamlit app
+### Local Testing
+
+#### Streamlit app (Local)
 1. Install dependencies:
-   - `pip install -r requirements.txt`
+   ```bash
+   pip install -r requirements.txt
+   ```
 2. Make sure the model exists:
    - Run `notebook1.ipynb` to generate `artifacts/hotel_cancellation_model.joblib`
+   - Or run: `papermill notebook1.ipynb notebook1_executed.ipynb`
 3. Start the app:
-   - `streamlit run app.py`
+   ```bash
+   streamlit run app.py
+   ```
+4. Open http://localhost:8501 in your browser
 
 Notes:
 - The app uses a configurable `Decision threshold` slider. If `probability >= threshold`, it predicts `Canceled`.
 - You can tune the threshold in the notebook (see the `Threshold tuning` section) to trade off precision vs recall.
 
-### Validation script (sample input)
+#### Validation script (sample input)
 Run:
-- `python validate_sample.py`
+```bash
+python validate_sample.py
+```
+
+### Deployment to GitHub
+
+1. **Create a new GitHub repository** at https://github.com/new
+   - Repository name: `hotel-booking-prediction` (or your preferred name)
+   - Add a description: "Hotel booking cancellation predictor with Streamlit web interface"
+   - Choose "Public" (to use Streamlit Community Cloud for free)
+
+2. **Clone and push your code:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/hotel-booking-prediction.git
+   cd hotel-booking-prediction
+   
+   # Copy ALL files from the local project
+   cp -r ../Predictive_Modeling_v3/* .
+   
+   # Add all files to git
+   git add .
+   git commit -m "Initial commit: Hotel booking prediction model with Streamlit app"
+   git branch -M main
+   git push -u origin main
+   ```
+
+3. **Repository structure (should include):**
+   - `app.py` — Streamlit web interface
+   - `validate_sample.py` — Model validation script
+   - `notebook1.ipynb` — Model training notebook
+   - `data/hotel_bookings.csv` — Dataset
+   - `requirements.txt` — Python dependencies
+   - `.gitignore` — Ignored files
+   - `.github/workflows/train-model.yml` — GitHub Actions workflow
+   - `.streamlit/config.toml` — Streamlit configuration
+   - `README.md` — This file
+
+### Deployment to Streamlit Community Cloud 
+
+1. **Sign up for Streamlit Community Cloud** (if you haven't already):
+   - Go to https://streamlit.io/cloud
+   - Sign in with your GitHub account
+
+2. **Deploy the app:**
+   - Click "New app" button
+   - Select your GitHub repository: `YOUR_USERNAME/hotel-booking-prediction`
+   - Select the main branch
+   - Set the main file path to: `app.py`
+   - Click "Deploy"
+
+3. **Share your app:**
+   - Once deployed, Streamlit provides a public URL like:
+     ```
+     https://hotel-booking-prediction.streamlit.app
+     ```
+   - Share this link with anyone to access your live predictor!
+
+4. **Auto-deployment:**
+   - Every push to the `main` branch automatically redeploys your app
+   - The GitHub Actions workflow runs the notebook to retrain the model on each push
+
+### GitHub Actions (Automated Model Training)
+
+The `.github/workflows/train-model.yml` file automates model training:
+
+- **Trigger:** Runs on every push to `main` branch
+- **What it does:**
+  1. Sets up Python 3.11 environment
+  2. Installs dependencies from `requirements.txt`
+  3. Executes `notebook1.ipynb` using papermill
+  4. Validates the model with `validate_sample.py`
+  5. Uploads the trained model as an artifact
+
+To view workflow status:
+- Go to your GitHub repo → **Actions** tab
+- See the latest workflow run and logs
